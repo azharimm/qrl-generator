@@ -1,10 +1,11 @@
 import React from 'react';
+import { Link } from 'react-router-dom'
 
 const Navbar = () => {
     return (
         <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
-            <a className="navbar-brand" href="/">
-                QRL Generator
+            <a class="navbar-brand" href="#">
+                <img src="https://cdn1.iconfinder.com/data/icons/ios-11-glyphs/30/qr_code-256.png" width="30" height="30" alt="" loading="lazy" style={{background: 'white'}} />
             </a>
             <button
                 className="navbar-toggler"
@@ -20,14 +21,14 @@ const Navbar = () => {
             <div className="collapse navbar-collapse" id="navbarNav">
                 <ul className="navbar-nav">
                     <li className="nav-item active">
-                        <a className="nav-link" href="/">
+                        <Link className="nav-link" to="/">
                             Home
-                        </a>
+                        </Link>
                     </li>
                     <li className="nav-item">
-                        <a className="nav-link" href="/">
+                        <Link className="nav-link" to="/history">
                             History
-                        </a>
+                        </Link>
                     </li>
                 </ul>
             </div>
