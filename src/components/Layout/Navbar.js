@@ -4,9 +4,9 @@ import { Link } from 'react-router-dom'
 const Navbar = () => {
     return (
         <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
-            <a class="navbar-brand" href="#">
+            <Link class="navbar-brand" to="/">
                 <img src="https://cdn1.iconfinder.com/data/icons/ios-11-glyphs/30/qr_code-256.png" width="30" height="30" alt="" loading="lazy" style={{background: 'white'}} />
-            </a>
+            </Link>
             <button
                 className="navbar-toggler"
                 type="button"

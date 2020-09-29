@@ -1,0 +1,34 @@
+.search__input {
+    border: 1px solid lightgray;
+    height: 50px;
+    padding: 10px 20px;
+    border-radius: 999px;
+    margin: 0 auto;
+    /* margin-top: 40px; */
+    max-width: 540px;
+}
+
+.search__input > input {
+    flex: 1;
+    padding: 10px 20px;
+    font-size: medium;
+    border: none;
+}
+
+.search__input:focus {
+    border-color: lightgray;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+
+.card {
+    border-radius: 25px;
+}
+
+.card:hover {
+    box-shadow: 0 0 11px rgba(33,33,33,.2); 
+}
+
+.btn {
+    border-radius: 25px;
+}
