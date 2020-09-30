@@ -13,10 +13,12 @@ const History = () => {
                         <h4>Histories</h4>
                         <table className="table">
                             <thead>
-                                <th>Original URL</th>
-                                <th>Short URL</th>
-                                <th>Alternative</th>
-                                <th>QR</th>
+                                <tr>
+                                    <th>Original URL</th>
+                                    <th>Short URL</th>
+                                    <th>Alternative</th>
+                                    <th>QR</th>
+                                </tr>
                             </thead>
                             <tbody>
                                 <tr>
