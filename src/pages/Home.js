@@ -1,12 +1,40 @@
-import React from 'react';
+import React, { useState } from 'react';
+import axios from 'axios';
 import Card from '../components/Card';
 import Container from '../components/Container';
 import Row from '../components/Row';
 import Col from '../components/Col';
+import Loading from '../components/Loading'
+import Error from '../components/Error'
 
 import './Home.css';
 
 const Home = () => {
+    const [link, setLink] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const [result, setResult] = useState();
+    const [error, setError] = useState();
+
+    const fetchData = async () => {
+        try {
+            const response = await axios.get(`https://api.shrtco.de/v2/shorten?url=${link}`)
+            return response.data.result;
+        } catch (error) {
+            setError(error.response);
+            return new Error(error.response);
+        }
+    }
+
+    const submit = async (e) => {
+        e.preventDefault();
+        setIsLoading(true);
+        setResult();
+        setError();
+        window.scrollTo(0, document.body.scrollHeight || document.documentElement.scrollHeight);
+        const data = await fetchData();
+        setResult(data);
+        setIsLoading(false)
+    };
     return (
         <React.Fragment>
             <Container className="mt-5">
@@ -24,17 +52,22 @@ const Home = () => {
                                     QRcode and URL Shortener Generator
                                 </small>
                             </div>
-                            <form action="" className="mt-2">
+                            <form onSubmit={submit} className="mt-2">
                                 <div className="form-group">
                                     <input
                                         type="text"
                                         className="form-control search__input"
                                         placeholder="Your URL"
+                                        value={link}
+                                        required
+                                        onChange={(e) =>
+                                            setLink(e.target.value)
+                                        }
                                         autoComplete="off"
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <button className="btn btn-primary btn-block">
+                                    <button disabled={isLoading} className="btn btn-primary btn-block">
                                         Generate
                                     </button>
                                 </div>
@@ -43,34 +76,54 @@ const Home = () => {
                     </Col>
                 </Row>
             </Container>
-            <Container className="mt-5">
-                <Row>
-                    <Col className="col-md-6 offset-md-3">
-                        <Card className="card">
-                            <div className="text-center">
-                                <small>Result:</small> <br />
-                                <br />
-                                <img
-                                    src="https://www.qrtag.net/api/qr_transparent_6.svg?url=https://www.youtube.com/watch?v=J9wVHMGdUh8&ab_channel=AbdelAchrian"
-                                    width="140"
-                                    alt="logo"
-                                />
-                            </div>
-                            <ul class="list-group mt-3" style={{fontSize: 'small'}}>
-                                <li class="list-group-item">
-                                    Short URL : <a href="https://9qr.de/Kldjp">9qr.de/Kldjp</a>
-                                </li>
-                                <li class="list-group-item">
-                                    Alternative : <a href="https://shrtco.de/Kldjp">shrtco.de/Kldjp</a>
-                                </li>
-                                <li className="list-group-item">
-                                    Original URL : <a href="https://www.youtube.com/watch?v=J9wVHMGdUh8">https://www.youtube.com/watch?v=J9wVHMGdUh8</a>
-                                </li>
-                            </ul>
-                        </Card>
-                    </Col>
-                </Row>
-            </Container>
+            {result && (
+                <Container className="mt-5 mb-5">
+                    <Row>
+                        <Col className="col-md-6 offset-md-3">
+                            <Card className="card">
+                                <div className="text-center">
+                                    <small>Result:</small> <br />
+                                    <br />
+                                    <img
+                                        src={`https://www.qrtag.net/api/qr_transparent_6.svg?url=${result.original_link}`}
+                                        width="140"
+                                        alt="logo"
+                                    />
+                                </div>
+                                <ul
+                                    className="list-group mt-3"
+                                    style={{ fontSize: 'small' }}
+                                >
+                                    <li className="list-group-item">
+                                        Short URL :{' '}
+                                        <a href={result.full_short_link2}>
+                                            {result.short_link2}
+                                        </a>
+                                    </li>
+                                    <li className="list-group-item">
+                                        Alternative :{' '}
+                                        <a href={result.full_short_link}>
+                                            {result.short_link}
+                                        </a>
+                                    </li>
+                                    <li className="list-group-item">
+                                        Original URL :{' '}
+                                        <a href={result.original_link}>
+                                            {result.original_link}
+                                        </a>
+                                    </li>
+                                </ul>
+                            </Card>
+                        </Col>
+                    </Row>
+                </Container>
+            )}
+            {isLoading && !result && 
+                <Loading />
+            }
+            {error &&
+                <Error error={error} />
+            }
         </React.Fragment>
     );
 };
