@@ -1,10 +1,19 @@
-import React from 'react'
+import React, {useState, useEffect} from 'react'
 import Card from '../components/Card';
 import Container from '../components/Container';
 import Row from '../components/Row';
 import Col from '../components/Col';
 
 const History = () => {
+    const [histories, setHistories] = useState([]);
+
+    useEffect(() => {
+        const localHistories = localStorage.getItem('histories');
+        if(localHistories) {
+            setHistories(JSON.parse(localHistories));
+        }
+    }, [setHistories])
+
     return (
         <Container className="mt-5">
             <Row>
@@ -21,22 +30,24 @@ const History = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>https://www.youtube.com/watch?v=J9wVHMGdUh8</td>
-                                    <td>
-                                        <a href="https://9qr.de/Kldjp">9qr.de/Kldjp</a>
-                                    </td>
-                                    <td>
-                                        <a href="https://shrtco.de/Kldjp">shrtco.de/Kldjp</a>
-                                    </td>
-                                    <td>
-                                        <img 
-                                            src="https://www.qrtag.net/api/qr_transparent_6.svg?url=https://www.youtube.com/watch?v=J9wVHMGdUh8&ab_channel=AbdelAchrian"
-                                            alt="qr"
-                                            width="50"
-                                            />
-                                    </td>
-                                </tr>
+                                {histories.slice(0).reverse().map(history => (
+                                    <tr key={history.code}>
+                                        <td>{history.original_link}</td>
+                                        <td>
+                                            <a href={history.full_short_link2}>{history.short_link2}</a>
+                                        </td>
+                                        <td>
+                                            <a href={history.full_short_link}>{history.short_link}</a>
+                                        </td>
+                                        <td>
+                                            <img 
+                                                src={`https://www.qrtag.net/api/qr_transparent_6.svg?url=${history.original_link}`}
+                                                alt="qr"
+                                                width="50"
+                                                />
+                                        </td>
+                                    </tr>
+                                ))}
                             </tbody>
                         </table>
                     </Card>
