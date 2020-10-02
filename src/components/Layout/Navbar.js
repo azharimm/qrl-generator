@@ -1,7 +1,9 @@
 import React from 'react';
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 
 const Navbar = () => {
+    const location = useLocation();
+    const pathname = location.pathname;
     return (
         <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
             <Link className="navbar-brand" to="/">
@@ -20,12 +22,12 @@ const Navbar = () => {
             </button>
             <div className="collapse navbar-collapse" id="navbarNav">
                 <ul className="navbar-nav">
-                    <li className="nav-item active">
+                    <li className={pathname === '/' ? 'nav-item active' : ''}>
                         <Link className="nav-link" to="/">
                             Home
                         </Link>
                     </li>
-                    <li className="nav-item">
+                    <li className={pathname === '/history' ? 'nav-item active' : ''}>
                         <Link className="nav-link" to="/history">
                             History
                         </Link>
