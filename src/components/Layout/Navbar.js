@@ -22,12 +22,12 @@ const Navbar = () => {
             </button>
             <div className="collapse navbar-collapse" id="navbarNav">
                 <ul className="navbar-nav">
-                    <li className={pathname === '/' ? 'nav-item active' : ''}>
+                    <li className={`nav-item `+(pathname === '/' ? 'active' : '')}>
                         <Link className="nav-link" to="/">
                             Home
                         </Link>
                     </li>
-                    <li className={pathname === '/history' ? 'nav-item active' : ''}>
+                    <li className={`nav-item `+(pathname === '/history' ? 'active' : '')}>
                         <Link className="nav-link" to="/history">
                             History
                         </Link>
