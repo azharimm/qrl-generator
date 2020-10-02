@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Card from '../components/Card';
 import Container from '../components/Container';
@@ -10,13 +10,24 @@ import Error from '../components/Error'
 import './Home.css';
 
 const Home = () => {
+    const [histories, setHistories] = useState([]);
     const [link, setLink] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [result, setResult] = useState();
     const [error, setError] = useState();
 
+    useEffect(() => {
+        const localHistories = localStorage.getItem('histories');
+        if(localHistories) {
+            setHistories(JSON.parse(localHistories));
+        }
+    }, [setHistories])
+
     const fetchData = async () => {
         try {
+            setIsLoading(true);
+            setResult();
+            setError();
             const response = await axios.get(`https://api.shrtco.de/v2/shorten?url=${link}`)
             return response.data.result;
         } catch (error) {
@@ -25,16 +36,38 @@ const Home = () => {
         }
     }
 
+    const isValidURL = () => {
+        var pattern = new RegExp('^(https?:\\/\\/)?'+
+          '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+
+          '((\\d{1,3}\\.){3}\\d{1,3}))'+
+          '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+
+          '(\\?[;&a-z\\d%_.~+=-]*)?'+
+          '(\\#[-a-z\\d_]*)?$','i');
+        return !!pattern.test(link);
+    }
+
     const submit = async (e) => {
         e.preventDefault();
-        setIsLoading(true);
-        setResult();
-        setError();
-        window.scrollTo(0, document.body.scrollHeight || document.documentElement.scrollHeight);
-        const data = await fetchData();
-        setResult(data);
+        if(!isValidURL()) {
+            const err = {
+                data: {
+                    error: 'Please input a valid URL!'
+                }
+            }
+            setError(err);
+            setIsLoading(false);
+            return;
+        }
+        try {
+            const data = await fetchData();
+            setResult(data);
+            const updateHistories = [...histories, data];
+            setHistories(updateHistories);
+            localStorage.setItem('histories', JSON.stringify(updateHistories));
+        }catch(e){}
         setIsLoading(false)
     };
+    
     return (
         <React.Fragment>
             <Container className="mt-5">
