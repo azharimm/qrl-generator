@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import axios from 'axios';
+import { useStateValue } from '../context/StateProvider';
+import { actionTypes } from '../context/reducer';
 import Card from '../components/Card';
 import Container from '../components/Container';
 import Row from '../components/Row';
@@ -10,28 +12,24 @@ import Error from '../components/Error'
 import './Home.css';
 
 const Home = () => {
-    const [histories, setHistories] = useState([]);
-    const [link, setLink] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
-    const [result, setResult] = useState();
-    const [error, setError] = useState();
+    const [{ isLoading, error, link, result, histories }, dispatch] = useStateValue();
 
     useEffect(() => {
         const localHistories = localStorage.getItem('histories');
         if(localHistories) {
-            setHistories(JSON.parse(localHistories));
+            dispatch({type: actionTypes.SET_HISTORIES, histories: JSON.parse(localHistories)});
         }
-    }, [setHistories])
+    }, [dispatch])
 
     const fetchData = async () => {
         try {
-            setIsLoading(true);
-            setResult();
-            setError();
+            dispatch({type: actionTypes.SET_IS_LOADING, loading: true});
+            dispatch({type: actionTypes.SET_ERROR, error: null});
+            dispatch({type: actionTypes.SET_RESULT, result: null});
             const response = await axios.get(`https://api.shrtco.de/v2/shorten?url=${link}`)
             return response.data.result;
         } catch (error) {
-            setError(error.response);
+            dispatch({type: actionTypes.SET_ERROR, error: error.response});
             return new Error(error.response);
         }
     }
@@ -46,7 +44,7 @@ const Home = () => {
         return !!pattern.test(link);
     }
 
-    const submit = async (e) => {
+    const submit = async (e, link) => {
         e.preventDefault();
         if(!isValidURL()) {
             const err = {
@@ -54,18 +52,18 @@ const Home = () => {
                     error: 'Please input a valid URL!'
                 }
             }
-            setError(err);
-            setIsLoading(false);
+            dispatch({type: actionTypes.SET_IS_LOADING, loading: false});
+            dispatch({type: actionTypes.SET_ERROR, error: err});
             return;
         }
         try {
             const data = await fetchData();
-            setResult(data);
             const updateHistories = [...histories, data];
-            setHistories(updateHistories);
+            dispatch({type: actionTypes.SET_RESULT, result: data});
+            dispatch({type: actionTypes.SET_HISTORIES, histories: updateHistories});
             localStorage.setItem('histories', JSON.stringify(updateHistories));
         }catch(e){}
-        setIsLoading(false)
+        dispatch({type: actionTypes.SET_IS_LOADING, loading: false});
     };
     
     return (
@@ -85,7 +83,7 @@ const Home = () => {
                                     QRcode and URL Shortener Generator
                                 </small>
                             </div>
-                            <form onSubmit={submit} className="mt-2">
+                            <form onSubmit={(event) => submit(event, link)} className="mt-2">
                                 <div className="form-group">
                                     <input
                                         type="text"
@@ -94,7 +92,7 @@ const Home = () => {
                                         value={link}
                                         required
                                         onChange={(e) =>
-                                            setLink(e.target.value)
+                                            dispatch({type: actionTypes.SET_LINK ,link: e.target.value})
                                         }
                                         autoComplete="off"
                                     />

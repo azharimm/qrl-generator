@@ -1,18 +1,20 @@
-import React, {useState, useEffect} from 'react'
+import React, {useEffect} from 'react'
+import { useStateValue } from '../context/StateProvider';
+import { actionTypes } from '../context/reducer';
 import Card from '../components/Card';
 import Container from '../components/Container';
 import Row from '../components/Row';
 import Col from '../components/Col';
 
 const History = () => {
-    const [histories, setHistories] = useState([]);
+    const [{ histories }, dispatch] = useStateValue();
 
     useEffect(() => {
         const localHistories = localStorage.getItem('histories');
         if(localHistories) {
-            setHistories(JSON.parse(localHistories));
+            dispatch({type: actionTypes.SET_HISTORIES, histories: JSON.parse(localHistories)});
         }
-    }, [setHistories])
+    }, [dispatch])
 
     return (
         <Container className="mt-5">
